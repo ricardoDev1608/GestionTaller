@@ -69,3 +69,74 @@ def registrar_servicio(request):
         except KeyError:
             return JsonResponse({"error": "Datos incompletos"}, status=400)
     return JsonResponse({"error": "Método no permitido"}, status=405)
+
+
+@csrf_exempt
+def buscar_cliente(request, cliente_id):
+    if request.method == "GET":
+        try:
+            cliente = Cliente.objects.values("id", "nombre", "telefono", "email").get(id=cliente_id)
+            return JsonResponse(cliente)
+        except Cliente.DoesNotExist:
+            return JsonResponse({"error": "Cliente no encontrado"}, status=404)
+    return JsonResponse({"error": "Método no permitido"}, status=405)
+
+
+@csrf_exempt
+def buscar_coche_por_matricula(request, matricula):
+    if request.method == "GET":
+        try:
+            coche = Coche.objects.select_related("cliente").get(matricula=matricula)
+            return JsonResponse({
+                "coche": {
+                    "id": coche.id,
+                    "marca": coche.marca,
+                    "modelo": coche.modelo,
+                    "matricula": coche.matricula
+                },
+                "cliente": {
+                    "id": coche.cliente.id,
+                    "nombre": coche.cliente.nombre,
+                    "telefono": coche.cliente.telefono,
+                    "email": coche.cliente.email
+                }
+            })
+        except Coche.DoesNotExist:
+            return JsonResponse({"error": "Coche no encontrado"}, status=404)
+    return JsonResponse({"error": "Método no permitido"}, status=405)
+
+
+@csrf_exempt
+def buscar_coches_de_cliente(request, cliente_id):
+    if request.method == "GET":
+        if not Cliente.objects.filter(id=cliente_id).exists():
+            return JsonResponse({"error": "Cliente no encontrado"}, status=404)
+        coches = list(
+            Coche.objects.filter(cliente_id=cliente_id).values("id", "marca", "modelo", "matricula")
+        )
+        return JsonResponse(coches, safe=False)
+    return JsonResponse({"error": "Método no permitido"}, status=405)
+
+
+@csrf_exempt
+def buscar_servicios_de_coche(request, coche_id):
+    if request.method == "GET":
+        try:
+            coche = Coche.objects.get(id=coche_id)
+            servicios = list(
+                CocheServicio.objects.filter(coche=coche)
+                .select_related("servicio")
+                .values("servicio__id", "servicio__nombre", "servicio__descripcion")
+            )
+            return JsonResponse({
+                "coche": {
+                    "id": coche.id,
+                    "marca": coche.marca,
+                    "modelo": coche.modelo,
+                    "matricula": coche.matricula
+                },
+                "servicios": servicios
+            })
+        except Coche.DoesNotExist:
+            return JsonResponse({"error": "Coche no encontrado"}, status=404)
+    return JsonResponse({"error": "Método no permitido"}, status=405)
