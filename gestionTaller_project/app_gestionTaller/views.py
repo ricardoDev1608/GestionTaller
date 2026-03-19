@@ -1,7 +1,9 @@
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.shortcuts import render, redirect
 import json
 from .models import Cliente, Coche, Servicio, CocheServicio
+from .forms import ClienteForm, CocheForm, ServicioForm
 
 
 def lista_clientes(request):
@@ -140,3 +142,55 @@ def buscar_servicios_de_coche(request, coche_id):
         except Coche.DoesNotExist:
             return JsonResponse({"error": "Coche no encontrado"}, status=404)
     return JsonResponse({"error": "Método no permitido"}, status=405)
+
+
+def inicio(request):
+    return render(request, "inicio.html")
+
+
+def lista_clientes_web(request):
+    clientes = Cliente.objects.all()
+    return render(request, "clientes.html", {"clientes": clientes})
+
+
+def lista_coches_web(request):
+    coches = Coche.objects.select_related("cliente").all()
+    return render(request, "coches.html", {"coches": coches})
+
+
+def lista_servicios_web(request):
+    servicios = Servicio.objects.all()
+    return render(request, "servicios.html", {"servicios": servicios})
+
+
+def nuevo_cliente(request):
+    if request.method == "POST":
+        form = ClienteForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("lista_clientes")
+    else:
+        form = ClienteForm()
+    return render(request, "formulario.html", {"form": form, "titulo": "Nuevo Cliente"})
+
+
+def nuevo_coche(request):
+    if request.method == "POST":
+        form = CocheForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("lista_coches")
+    else:
+        form = CocheForm()
+    return render(request, "formulario.html", {"form": form, "titulo": "Nuevo Coche"})
+
+
+def nuevo_servicio(request):
+    if request.method == "POST":
+        form = ServicioForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("lista_servicios")
+    else:
+        form = ServicioForm()
+    return render(request, "formulario.html", {"form": form, "titulo": "Nuevo Servicio"})

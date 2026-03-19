@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Coches</title>
+</head>
+<body>
+  <nav>
+    <a href="{% url 'inicio' %}">Inicio</a> |
+    <a href="{% url 'lista_clientes' %}">Clientes</a> |
+    <a href="{% url 'lista_servicios' %}">Servicios</a>
+  </nav>
+
+  <h2>Lista de coches</h2>
+  <a href="{% url 'nuevo_coche' %}">Añadir nuevo coche</a>
+
+  <ul>
+    {% for coche in coches %}
+      <li>{{ coche.id }} - {{ coche.marca }} {{ coche.modelo }} - {{ coche.matricula }} (Cliente: {{ coche.cliente.nombre }})</li>
+    {% empty %}
+      <li>No hay coches registrados.</li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
