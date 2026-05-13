@@ -16,7 +16,7 @@
 
   <ul>
     {% for cliente in clientes %}
-      <li>{{ cliente.id }} - {{ cliente.nombre }} - {{ cliente.telefono }} - {{ cliente.email }}</li>
+      <li>{{ cliente.id }} - <a href="{% url 'detalle_cliente_web' cliente.id %}">{{ cliente.nombre }}</a> - {{ cliente.telefono }} - {{ cliente.email }}</li>
     {% empty %}
       <li>No hay clientes registrados.</li>
     {% endfor %}
