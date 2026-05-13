@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 import json
 from .models import Cliente, Coche, Servicio, CocheServicio
-from .forms import ClienteForm, CocheForm, ServicioForm
+from .forms import ClienteForm, CocheForm, ServicioForm, CocheServicioForm
 
 
 def lista_clientes(request):
@@ -194,3 +194,14 @@ def nuevo_servicio(request):
     else:
         form = ServicioForm()
     return render(request, "formulario.html", {"form": form, "titulo": "Nuevo Servicio"})
+
+
+def nuevo_coche_servicio(request):
+    if request.method == "POST":
+        form = CocheServicioForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("lista_servicios")
+    else:
+        form = CocheServicioForm()
+    return render(request, "formulario.html", {"form": form, "titulo": "Nueva Relación Coche-Servicio"})
