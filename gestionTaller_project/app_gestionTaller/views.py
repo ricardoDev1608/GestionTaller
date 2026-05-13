@@ -153,6 +153,22 @@ def lista_clientes_web(request):
     return render(request, "clientes.html", {"clientes": clientes})
 
 
+def detalle_cliente_web(request, cliente_id):
+    try:
+        cliente = Cliente.objects.get(id=cliente_id)
+        coches = Coche.objects.filter(cliente=cliente)
+
+        contexto = {
+            "cliente": cliente,
+            "coches": coches,
+        }
+
+        return render(request, "detalle_cliente.html", contexto)
+
+    except Cliente.DoesNotExist:
+        return JsonResponse({"error": "Cliente no encontrado"}, status=404)
+
+
 def lista_coches_web(request):
     coches = Coche.objects.select_related("cliente").all()
     return render(request, "coches.html", {"coches": coches})
