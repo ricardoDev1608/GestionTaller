@@ -174,6 +174,22 @@ def lista_coches_web(request):
     return render(request, "coches.html", {"coches": coches})
 
 
+def servicios_coche_web(request, coche_id):
+    try:
+        coche = Coche.objects.get(id=coche_id)
+        coche_servicios = CocheServicio.objects.filter(coche=coche).select_related("servicio")
+
+        contexto = {
+            "coche": coche,
+            "coche_servicios": coche_servicios,
+        }
+
+        return render(request, "servicios_coche.html", contexto)
+
+    except Coche.DoesNotExist:
+        return JsonResponse({"error": "Coche no encontrado"}, status=404)
+
+
 def lista_servicios_web(request):
     servicios = Servicio.objects.all()
     return render(request, "servicios.html", {"servicios": servicios})

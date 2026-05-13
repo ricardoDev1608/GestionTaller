@@ -16,7 +16,7 @@
 
   <ul>
     {% for coche in coches %}
-      <li>{{ coche.id }} - {{ coche.marca }} {{ coche.modelo }} - {{ coche.matricula }} (Cliente: {{ coche.cliente.nombre }})</li>
+      <li>{{ coche.id }} - {{ coche.marca }} {{ coche.modelo }} - {{ coche.matricula }} (Cliente: {{ coche.cliente.nombre }}) - <a href="{% url 'servicios_coche_web' coche.id %}">Ver servicios</a></li>
     {% empty %}
       <li>No hay coches registrados.</li>
     {% endfor %}
